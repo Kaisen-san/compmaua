@@ -21,6 +21,7 @@ const formatRawData = ( data ) => {
             .replace( /–/g, '-' )
             .replace( //g, "'" )
             .replace( //g, "'" )
+            .replace( //g, "'")
             .replace( /“/g, "'" )
             .replace( /”/g, "'" )
             .replace( /\\n\\n+\s*[\\n\\n|\\n]*/g, '\\n' )
@@ -32,8 +33,14 @@ const distinctQuestions = questions => {
 
     return questions.filter( ( question, index ) =>
             questions.findIndex( q =>
-                        q.pergunta.replace( /_+/g, '' ).toUpperCase()
-                        === question.pergunta.replace( /_+/g, '' ).toUpperCase() )
+                        q.pergunta.replace( /_+/g, '' )
+                                .replace( /\\n+/g, '' )
+                                .replace( /\s+/g, '' )
+                                .toUpperCase()
+                        === question.pergunta.replace( /_+/g, '' )
+                                .replace( /\\n+/g, '' )
+                                .replace( /\s+/g, '' )
+                                .toUpperCase() )
             === index );
 
 }
