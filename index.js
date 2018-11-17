@@ -24,9 +24,5 @@ app.get( '/so/k1', ( req, res ) => res.render( 'pages/so/k1' ) );
 
 app.get( '/so/k2', ( req, res ) => res.render( 'pages/so/k2' ) );
 
-app.get( '/so/k3', ( req, res ) => res.render( 'pages/so/k3' ) );
-
-app.get( '/so/k4', ( req, res ) => res.render( 'pages/so/k4' ) );
-
 
 app.listen( PORT, () => console.log( `Listening on ${ PORT }` ) );
