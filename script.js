@@ -1,72 +1,96 @@
-( () => {
+const fs = require('fs');
 
-    let container = document.querySelector( '#container' );
-    let content = '';
-    let db = '';
-    let xhr = new XMLHttpRequest();
+const getQuestions = ( subject, quizName, callback ) => {
 
-    xhr.open( 'GET', 'databases/database.json' );
-
-    xhr.onload = () => {
-
-        if ( xhr.status >= 200 && xhr.status < 400 ) {
-            console.log( xhr.responseText );
-            db = formatResponseText( xhr.responseText );
-            console.log( db );
-            db = JSON.parse( db );
-            console.log( db );
-            renderHTML();
-        }
-        else {
-            console.log( 'Server error' );
+    fs.readFile( `databases/${ subject }/${ quizName }.json`, 'utf8', ( err, data ) => {
+        if ( err ) {
+            throw new Error( err );
         }
 
-    }
+        let questions = JSON.parse( formatRawData( data ) );
+        callback( subject, quizName, questions );
+    });
 
-    xhr.send();
+}
 
-    const formatResponseText = ( responseText ) => {
+const formatRawData = ( data ) => {
 
-        return responseText.replace( /\s+/g, ' ' )
-                .replace( /\&nbsp\;+/g, ' ' )
-                .replace( //g, '-' )
-                .replace( /–/g, '-' )
-                .replace( //g, "'" )
-                .replace( //g, "'" )
-                .replace( /“/g, "'" )
-                .replace( /”/g, "'" )
-                .replace( /\\n\\n+\s*[\\n\\n|\\n]*/g, '\\n' )
-                .replace( /\\n+\s*[\\n\\n|\\n]*/g, '\\n' );
+    return data.replace( /\s+/g, ' ' )
+            .replace( /\&nbsp\;+/g, ' ' )
+            .replace( //g, '-' )
+            .replace( /–/g, '-' )
+            .replace( //g, "'" )
+            .replace( //g, "'" )
+            .replace( /“/g, "'" )
+            .replace( /”/g, "'" )
+            .replace( /\\n\\n+\s*[\\n\\n|\\n]*/g, '\\n' )
+            .replace( /\\n+\s*[\\n\\n|\\n]*/g, '\\n' );
 
-    }
+}
 
-    const renderHTML = () => {
+const distinctQuestions = questions => {
 
-        db = db.filter( ( question, index ) =>
-                db.findIndex( q =>
+    return questions.filter( ( question, index ) =>
+            questions.findIndex( q =>
                         q.pergunta.replace( /_+/g, '' ).toUpperCase()
                         === question.pergunta.replace( /_+/g, '' ).toUpperCase() )
-                === index );
+            === index );
 
-        console.log( db );
+}
 
-        for ( let i = 0; i < db.length; i++ ) {
-            db[i].pergunta = db[i].pergunta.replace( /\n+/g, '<br>' );
-            db[i].alternativas = db[i].alternativas.replace( /\n+/g, '<br>' );
-            db[i].resposta= db[i].resposta.replace( /\.+\s*\.*/g, '. ' ).replace( /\n+/g, '<br>' );
+const buildPartial = ( subject, partialName, questions ) => {
 
-            content += '<div class="question">'
-                    + `<span>${ i + 1 }.</span>`
-                    + `<p>${ db[i].pergunta }</p>`
-                    + ( db[i].imagem === '' ? '' : `<img src="${ db[i].imagem }">` )
-                    + `<p>${ db[i].alternativas }</p>`
-                    + `<p>${ db[i].resposta }</p>`
-                    + '</div>';
+    let content = '';
+
+    let uniqueQuestions = distinctQuestions( questions );
+
+    uniqueQuestions.forEach( ( q, i ) => {
+        q.pergunta = q.pergunta.replace( /\n+/g, '<br>' );
+        q.alternativas = q.alternativas.replace( /\n+/g, '<br>' );
+        q.resposta= q.resposta.replace( /\.+\s*\.*/g, '. ' ).replace( /\n+/g, '<br>' );
+
+        content += '<div class="question">'
+                + `<span>${ i + 1 }.</span>`
+                + `<p>${ q.pergunta }</p>`
+                + ( q.imagem ? `<img src="${ q.imagem }">` : '' )
+                + `<p>${ q.alternativas }</p>`
+                + `<p>${ q.resposta }</p>`
+                + '</div>';
+    });
+
+    writePartial( subject, partialName, content );
+
+}
+
+const writePartial = ( subject, partialName, content ) => {
+
+    fs.writeFile( `views/partials/${ subject }/${ partialName }.ejs`, content, ( err ) => {
+        if ( err ) {
+            throw new Error( err );
         }
 
-        console.log( content );
-        container.insertAdjacentHTML( 'beforeend', content );
+        console.log( `File ${ partialName } from ${ subject } recorded successfully!` );
+    } );
 
-    }
+}
 
-})();
+// getQuestions( 'arquitetura', 'k1', buildPartial );
+
+// getQuestions( 'arquitetura', 'k2', buildPartial );
+
+getQuestions( 'arquitetura', 'k3', buildPartial );
+
+getQuestions( 'arquitetura', 'k4', buildPartial );
+
+// getQuestions( 'so', 'k1', buildPartial );
+
+// getQuestions( 'so', 'k2', buildPartial );
+
+/**
+ * NOTE:
+ *      Moodles que contém imagens precisam ter elas baixadas e adicionadas a
+ *      pasta images (no k específico). Além disso, o partial gerado deve ter
+ *      os img[src] modificados para o path dentro da pasta images. O arquivo
+ *      inject.js apenas salva o img[src] que vem no Moodle, o trabalho de
+ *      baixar e dar um nome a imagem tem de ser feito manualmente.
+ */
