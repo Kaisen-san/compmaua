@@ -1,0 +1,12 @@
+<html>
+    <head>
+        <%- include( '../partials/header', { title: subject.toUpperCase() } ) %>
+    </head>
+    <body>
+        <h1 class="title"><%= quizName %> - <%= subject %></h1>
+        
+        <div id='container'>
+            <%- include( `../partials/${ subject }/${ quizName }` ) %>
+        </div>
+    </body>
+</html>

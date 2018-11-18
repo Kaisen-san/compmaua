@@ -92,7 +92,7 @@ const writePartial = ( subject, partialName, content ) => {
         }
 
         console.log( `File ${ partialName } from ${ subject } recorded successfully!` );
-    } );
+    });
 
 }
 
