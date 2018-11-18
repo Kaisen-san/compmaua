@@ -1,3 +1,15 @@
+/**
+ * O código abaixo pega os databases dos questionários e monta o partial
+ * com as questões após formatá-las e excluir as repetições.
+ * 
+ * NOTE:
+ *   Moodles que contém imagens precisam ter elas baixadas e adicionadas a
+ *   pasta images (no k específico). Além disso, o partial gerado deve ter
+ *   os img[src] modificados para o path dentro da pasta images. O arquivo
+ *   inject.js apenas salva o img[src] que vem no Moodle, o trabalho de
+ *   baixar e dar um nome a imagem tem de ser feito manualmente.
+ */
+
 const fs = require('fs');
 
 const getQuestions = ( subject, quizName, callback ) => {
@@ -95,12 +107,3 @@ getQuestions( 'arquitetura', 'k4', buildPartial );
 // getQuestions( 'so', 'k1', buildPartial );
 
 // getQuestions( 'so', 'k2', buildPartial );
-
-/**
- * NOTE:
- *      Moodles que contém imagens precisam ter elas baixadas e adicionadas a
- *      pasta images (no k específico). Além disso, o partial gerado deve ter
- *      os img[src] modificados para o path dentro da pasta images. O arquivo
- *      inject.js apenas salva o img[src] que vem no Moodle, o trabalho de
- *      baixar e dar um nome a imagem tem de ser feito manualmente.
- */

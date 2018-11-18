@@ -1,3 +1,8 @@
+/**
+ * Cole o código abaixo no console do browser e substitua onde está COLE_O_ID_AQUI
+ * com o ID do form principal da página do questionário no Moodle
+ */
+
 let attempt = document.getElementById( "COLE_O_ID_AQUI" ).firstChild;
 let questionsList = [];
 
